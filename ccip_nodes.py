@@ -137,6 +137,12 @@ class CCIPExtractFeature:
         pil = _to_pil_image(image)
         emb = ccip_extract_feature(pil, size=size, model=model["model"] if isinstance(model, dict) else model)
         emb = np.asarray(emb)
+        if 'torch' in globals() and torch is not None:
+            try:
+                emb_t = torch.from_numpy(emb)
+                return (emb_t,)
+            except Exception:
+                return (emb,)
         return (emb,)
 
 
