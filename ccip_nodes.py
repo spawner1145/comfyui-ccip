@@ -2,10 +2,27 @@ from typing import Any, Tuple, Optional, List
 import numpy as np
 from PIL import Image
 import os
+import sys
+from pathlib import Path
 try:
     import folder_paths
 except Exception:
     folder_paths = None
+
+sys.path.append(os.path.dirname(__file__))
+
+try:
+    from ccip_lib.ccip import (
+        ccip_extract_feature,
+        ccip_difference,
+        ccip_same,
+        ccip_default_threshold,
+    )
+except Exception:
+    ccip_extract_feature = None
+    ccip_difference = None
+    ccip_same = None
+    ccip_default_threshold = None
 
 
 class CCIPModelLoader:
@@ -95,7 +112,8 @@ class CCIPExtractFeature:
     CATEGORY = "CCIP"
 
     def extract(self, image, model, size: int = 384):
-        from ccip_lib.ccip import ccip_extract_feature
+        if ccip_extract_feature is None:
+            raise ImportError('ccip_lib is not available - cannot extract features. Ensure package `ccip_lib` is installed and importable.')
 
         pil = _to_pil_image(image)
         emb = ccip_extract_feature(pil, size=size, model=model["model"] if isinstance(model, dict) else model)
@@ -122,7 +140,8 @@ class CCIPDifference:
     CATEGORY = "CCIP"
 
     def diff(self, image_a, image_b, model, size: int = 384):
-        from ccip_lib.ccip import ccip_difference
+        if ccip_difference is None:
+            raise ImportError('ccip_lib is not available - cannot compute difference. Ensure package `ccip_lib` is installed and importable.')
 
         a = _to_pil_image(image_a)
         b = _to_pil_image(image_b)
@@ -151,7 +170,8 @@ class CCIPSame:
     CATEGORY = "CCIP"
 
     def same(self, image_a, image_b, model, use_default_threshold: bool = True, threshold: float = 0.18, size: int = 384):
-        from ccip_lib.ccip import ccip_same, ccip_default_threshold
+        if ccip_same is None or ccip_default_threshold is None:
+            raise ImportError('ccip_lib is not available - cannot perform similarity check. Ensure package `ccip_lib` is installed and importable.')
 
         a = _to_pil_image(image_a)
         b = _to_pil_image(image_b)
