@@ -30,11 +30,11 @@ class CCIPModelLoader:
             except Exception:
                 subfolders = []
 
-        choices = ['REMOTE (HuggingFace)'] + subfolders
+        choices = subfolders
 
         return {
             "required": {
-                "model_folder": (choices, {"default": choices[0] if choices else "REMOTE (HuggingFace)"}),
+                "model_folder": (choices, {"default": choices[0] if choices else ""}),
                 "device": ("STRING", {"default": "cpu"}),
             }
         }
@@ -43,12 +43,11 @@ class CCIPModelLoader:
     FUNCTION = "load"
     CATEGORY = "CCIP"
 
-    def load(self, model_choice: str = "REMOTE (HuggingFace)") -> Tuple[dict]:
-        if model_choice is None:
-            model_choice = 'REMOTE (HuggingFace)'
-
-        if model_choice == 'REMOTE (HuggingFace)':
-            return ({"model": None, "type": "remote"},)
+    def load(self, model_choice: Optional[str] = None, model_folder: Optional[str] = None) -> Tuple[dict]:
+        if model_folder is not None:
+            model_choice = model_folder
+        if not model_choice:
+            raise ValueError('No model folder selected; remote option removed. Please choose a local model folder.')
 
         base = self._models_base_from_folder_paths()
         if base is None:
