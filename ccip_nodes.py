@@ -34,8 +34,7 @@ class CCIPModelLoader:
 
         return {
             "required": {
-                "model_folder": (choices, {"default": choices[0] if choices else ""}),
-                "device": ("STRING", {"default": "cpu"}),
+                "model_folder": (choices, {"default": choices[0] if choices else ""})
             }
         }
 
