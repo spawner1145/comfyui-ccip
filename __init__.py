@@ -1,0 +1,7 @@
+
+from .ccip_nodes import load_nodes, NODE_CLASSES, NODE_CLASS_MAPPINGS
+
+NODE_CLASSES = []
+NODE_CLASS_MAPPINGS = {}
+
+__all__ = ["load_nodes", "NODE_CLASSES", "NODE_CLASS_MAPPINGS"]
