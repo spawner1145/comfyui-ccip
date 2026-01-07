@@ -5,6 +5,10 @@ import os
 import sys
 from pathlib import Path
 try:
+    import torch
+except Exception:
+    torch = None
+try:
     import folder_paths
 except Exception:
     folder_paths = None
@@ -81,17 +85,32 @@ def _to_pil_image(img: Any) -> Image.Image:
         return img
     if isinstance(img, str):
         return Image.open(img)
-    if isinstance(img, np.ndarray):
-        arr = img
+    if torch is not None and isinstance(img, torch.Tensor):
+        t = img
+        if t.ndim == 4:
+            t = t[0]
+        arr = t.detach().cpu().numpy()
         if arr.ndim == 3 and arr.shape[0] in (1, 3):
-            if arr.shape[0] in (1,):
+            if arr.shape[0] == 1:
                 arr = np.squeeze(arr, 0)
             else:
                 arr = arr.transpose(1, 2, 0)
         if arr.dtype == np.float32 or arr.dtype == np.float64:
             arr = np.clip(arr * 255.0, 0, 255).astype(np.uint8)
         return Image.fromarray(arr)
-    raise TypeError(f"Unsupported image type: {type(img)}")
+
+    if isinstance(img, np.ndarray):
+        arr = img
+        if arr.ndim == 4:
+            arr = arr[0]
+        if arr.ndim == 3 and arr.shape[0] in (1, 3):
+            if arr.shape[0] == 1:
+                arr = np.squeeze(arr, 0)
+            else:
+                arr = arr.transpose(1, 2, 0)
+        if arr.dtype == np.float32 or arr.dtype == np.float64:
+            arr = np.clip(arr * 255.0, 0, 255).astype(np.uint8)
+        return Image.fromarray(arr)
 
 
 class CCIPExtractFeature:
