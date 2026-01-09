@@ -9,11 +9,12 @@ CCIP 本地模型文件夹结构要求
 - cluster.json           : 包含聚类相关的默认参数（eps, min_samples），用于 `ccip_clustering`
 
 示例目录结构:
-
+```
 C:\models\ccip-caformer_b36-24\
 ├─ model_feat.onnx
 ├─ model_metrics.onnx
 └─ metrics.json
+```
 
 使用方法:
 - 在 CLI 中传入 `--model-dir C:\models\ccip-caformer_b36-24`。
